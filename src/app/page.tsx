@@ -36,6 +36,7 @@ export default function Home() {
     setError(null); // Reset error
     setStartIndex(0); // Reset startIndex for a new query
     setIsFirstLoad(false);
+    setBooks([]);
     try {
       const res = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
