@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Google Books Search App
 
-## Getting Started
+This is a simple nextjs application that allows users to search for books using the Google Books API and view book details.
 
-First, run the development server:
+## Setup
+
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+```
+
+2. CD into local directory and install dependencies.
+
+```bash
+cd books-app
+```
+
+Using npm:
+
+```bash
+npm install
+```
+
+Using Yarn:
+
+```bash
+yarn install
+```
+
+Using pnpm:
+
+```bash
+pnpm install
+```
+
+Using Bun:
+
+```bash
+bun install
+```
+
+3. Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Or, depending on your package manager:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Using Yarn:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+yarn dev
+```
 
-## Learn More
+Using pnpm:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+pnpm dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Using Bun:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+bun run dev
+```
 
-## Deploy on Vercel
+This will start the application at http://localhost:3000.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Search for Books: Users can search for books using the Google Books API.
+2. View Book Details: Users can click on a book to view more details.
+3. Pagination: Load more books as you click 'load more'.
+
+## Technologies Used
+
+1. Next.js: React framework with server-side rendering (SSR) capabilities.
+2. Tailwind CSS: Utility-first CSS framework for styling.
+3. Google Books API: External API to fetch book data.

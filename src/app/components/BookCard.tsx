@@ -45,7 +45,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
           onClick={handleMoreInfo}
           className="text-blue-500 hover:underline mt-2 inline-block"
         >
-          More Info
+          Book Details
         </button>
       </div>
     </div>
