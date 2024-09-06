@@ -1,101 +1,141 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import { BookCard } from "./components/BookCard";
+
+// Define the types for the book structure returned by the API
+export interface Book {
+  id: string;
+  volumeInfo: {
+    title: string;
+    subtitle?: string;
+    authors?: string[];
+    publishedDate?: string;
+    publisher?: string;
+    imageLinks?: {
+      thumbnail?: string;
+    };
+    description?: string;
+    infoLink: string;
+  };
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [query, setQuery] = useState<string>(""); // Search query state
+  const [books, setBooks] = useState<Book[]>([]); // Books array state
+  const [loading, setLoading] = useState<boolean>(false); // Loading state
+  const [error, setError] = useState<string | null>(null); // Error handling
+  const [startIndex, setStartIndex] = useState<number>(0); // Pagination state
+  const [totalItems, setTotalItems] = useState<number>(0); // Total number of books
+  const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true); // Loading state
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // Prevent form submission
+    if (!query.trim()) return; // Do nothing if the query is empty
+    setLoading(true); // Start loading
+    setError(null); // Reset error
+    setStartIndex(0); // Reset startIndex for a new query
+    setIsFirstLoad(false);
+    try {
+      const res = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
+          query
+        )}&startIndex=0&maxResults=20`
+      );
+      if (!res.ok) throw new Error("Failed to fetch books");
+      const data = await res.json();
+      setBooks(() => data.items || []); // Set the books or empty if no items
+      setTotalItems(data.totalItems); // Store the total number of items
+    } catch (error) {
+      setError("Something went wrong. Please try again later.");
+      console.error(error);
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
+
+  const fetchMoreBooks = async () => {
+    const newStartIndex = startIndex + 20;
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
+          query
+        )}&startIndex=${newStartIndex}&maxResults=20`
+      );
+      if (!res.ok) throw new Error("Failed to fetch more books");
+      const data = await res.json();
+      setBooks((prevBooks) => [...prevBooks, ...(data.items || [])]); // Append new books
+      setStartIndex(newStartIndex); // Update startIndex for next page
+    } catch (error) {
+      setError("Something went wrong. Please try again later.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-4">
+      {/* header */}
+      <header className="text-center mb-6">
+        <h1 className="text-4xl font-bold text-slate-600">
+          Google Books API 📚🔎
+        </h1>
+      </header>
+
+      {/* form */}
+
+      <form
+        onSubmit={handleSubmit}
+        className="max-w-md mx-auto flex items-center mb-6"
+      >
+        <input
+          type="text"
+          placeholder="Search for books"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="flex-grow px-4 py-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          type="submit"
+          className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-r-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          Search
+        </button>
+      </form>
+
+      {loading && <p className="text-center">Loading...</p>}
+      {error && <p className="text-center text-red-500">{error}</p>}
+
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {books.map((book) => (
+          <BookCard book={book} key={book.id} />
+        ))}
+      </div>
+
+      {books.length > 0 && books.length < totalItems && (
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={fetchMoreBooks}
+            className="px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+            disabled={loading}
           >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            Load More
+          </button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      )}
+
+      {books.length === 0 &&
+        !loading &&
+        !error &&
+        (isFirstLoad ? (
+          ""
+        ) : (
+          <p className="text-center text-gray-500">
+            No books found. Please try again.
+          </p>
+        ))}
     </div>
   );
 }
