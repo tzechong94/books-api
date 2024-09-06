@@ -2,7 +2,15 @@
 
 This is a simple nextjs application that allows users to search for books using the Google Books API and view book details.
 
-## Setup
+## Watch Demo
+
+[![VIDEO DEMO](https://img.youtube.com/vi/0Pn2xqPG9o0/0.jpg)](https://www.youtube.com/watch?v=0Pn2xqPG9o0)
+
+## Try it online
+
+Visit https://books-app-kappa-bay.vercel.app/
+
+## Setup to run locally
 
 1. Clone the repository:
 
