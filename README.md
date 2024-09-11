@@ -15,7 +15,7 @@ Visit https://books-app-kappa-bay.vercel.app/
 1. Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone [<repository-url>](https://github.com/tzechong94/books-app.git)
 ```
 
 2. CD into local directory and install dependencies.
